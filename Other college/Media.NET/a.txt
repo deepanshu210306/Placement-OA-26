@@ -1,0 +1,6 @@
+Media.Net  DTU 
+3 DSA questions
+one was this : https://leetcode.com/problems/trapping-rain-water-ii/description/ 
+other one is 
+Given A tasks and three people, person 1 must perform exactly B tasks, person 2 exactly C tasks, and person 3 exactly D tasks. A task may be performed by one or more people , each task must be perfomed atleast one of the person,
+Third one, I can't remember
