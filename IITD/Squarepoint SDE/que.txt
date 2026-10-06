@@ -1,0 +1,122 @@
+Properly formatted problem
+You are given:
+- n nodes, numbered 0 to n-1
+- m bidirectional edges
+- malware[i] is:
+  - 1 → node i is initially infected
+  - 0 → node i is not infected
+Infection rule
+If an infected node exists in a connected component, the malware eventually spreads to every node in that connected component.
+You are allowed to remove exactly one node.
+After removing the node, the malware spreads again through the remaining graph.
+Task
+Return the index of the node whose removal results in the minimum possible number of infected nodes.
+If multiple nodes give the same minimum number of infected nodes, return the smallest index.
+
+solution:
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+
+    int n;
+    vector<vector<int>> graph;
+    vector<int> vis;
+
+    // Returns:
+    // {component size, number of infected nodes, infected node}
+    tuple<int, int, int> dfs(int start, vector<int>& malware) {
+
+        stack<int> st;
+        st.push(start);
+        vis[start] = 1;
+
+        int size = 0;
+        int infectedCount = 0;
+        int infectedNode = -1;
+
+        while (!st.empty()) {
+
+            int u = st.top();
+            st.pop();
+
+            size++;
+
+            if (malware[u] == 1) {
+                infectedCount++;
+                infectedNode = u;
+            }
+
+            for (int v : graph[u]) {
+                if (!vis[v]) {
+                    vis[v] = 1;
+                    st.push(v);
+                }
+            }
+        }
+
+        return {size, infectedCount, infectedNode};
+    }
+
+    int findNode(int n, vector<vector<int>>& edges,
+                 vector<int>& malware) {
+
+        this->n = n;
+
+        graph.assign(n, {});
+        vis.assign(n, 0);
+
+        // Build bidirectional graph
+        for (auto &edge : edges) {
+
+            int u = edge[0];
+            int v = edge[1];
+
+            graph[u].push_back(v);
+            graph[v].push_back(u);
+        }
+
+        int bestNode = -1;
+        int maxSaved = -1;
+
+        for (int i = 0; i < n; i++) {
+
+            if (vis[i])
+                continue;
+
+            auto [size, infectedCount, infectedNode]
+                = dfs(i, malware);
+
+            // Only useful if there is exactly
+            // one initially infected node
+            if (infectedCount == 1) {
+
+                if (size > maxSaved) {
+
+                    maxSaved = size;
+                    bestNode = infectedNode;
+                }
+
+                else if (size == maxSaved &&
+                         infectedNode < bestNode) {
+
+                    bestNode = infectedNode;
+                }
+            }
+        }
+
+        // If no useful infected component exists
+        // choose smallest infected node
+        if (bestNode == -1) {
+
+            for (int i = 0; i < n; i++) {
+                if (malware[i] == 1) {
+                    return i;
+                }
+            }
+        }
+
+        return bestNode;
+    }
+};
